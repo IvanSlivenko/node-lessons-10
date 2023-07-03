@@ -11,11 +11,11 @@
 null,null=> error 'height and weight required'
 "1.9","90" => error 'height and weight must be number'
 
-
-
 */
 
 const calcWeighIndex = require("./calcWeightIndex");
+
+
 describe("test calcWeighIndex function", () => {
     test("1.9, 90=> 24.93", () => {
         const result = calcWeighIndex(1.9, 90);
@@ -29,7 +29,19 @@ describe("test calcWeighIndex function", () => {
         }).toThrow("height must be first argument and weight - second");
     });
 
-    it("190,90   => error 'height must be in metr'", () => {
-        expect(() => {calcWeighIndex(190, 90)}).toThrow("'height must be in metr'")});
+    test("190, 90   => error 'height must be in metr'", () => {
+        expect(() => { calcWeighIndex(190, 90) }).toThrow("height must be in metr")
+    });
+    
+    test(" => error 'height and weight required'", () => {
+      expect(() => calcWeighIndex()).toThrow("height and weight required");
+    });
+
+    test("'1.9' , '90' => error 'height and weight must be number'", () => {
+      expect(() => calcWeighIndex("1.9", "90")).toThrow(
+        "height and weight must be number"
+      );
+    });
     
 });
+
