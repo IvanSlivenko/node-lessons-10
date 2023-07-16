@@ -1,12 +1,12 @@
 // const moviesService = require("../models/movies/index");
+
 const fs = require("fs/promises");
-const path=require("path")
 const Movie =require("../models/movie")
-const { HttpError } = require("../helpers");
+const { HttpError, cloudinary } = require("../helpers");
 const { ctrlWrapper } = require("../decorators");
 // const movieAddSchema = require("../schemas/movies");
 
-const moviesDir = path.resolve("public", "movies");
+
 
 const getAllMovies = async (req, res) => {
   // const result = await moviesService.getAllMovies();
@@ -59,29 +59,16 @@ const getMovieById=async (req, res) => {
         res.json(result);
    
 }
-////////////////////////////////////////////
-// const addMovie=async (req, res) => {
-//     const result = await moviesService.addMovie(req.body);
-//     res.status(201).json(result);
-//  }
-//////////////////////////////////////////
+
 
 const addMovie=async (req, res) => { 
   const { _id: owner } = req.user;
-  const { path: oldPath, filename } = req.file;
-  const newPath = path.join(moviesDir, filename);
-/////////////////////////////////////////////////////
-  // try {
-  //     await fs.rename(oldPath, newPath);
-  //  } catch (error) { 
-  //     error.message = "Not found path";
-  //     throw error;
-  // }
-  //////////////////////////////////////////////
-
-  await fs.rename(oldPath, newPath);
-  const poster=path.join("movies", filename)
-  const result = await Movie.create({ ...req.body,poster,owner });
+  const { path: oldPath } = req.file;
+  const fileData = await cloudinary.uploader.upload(oldPath, {
+    folder: "posters"
+  })
+  await fs.unlink(oldPath);
+  const result = await Movie.create({ ...req.body,poster: fileData.url, owner });
   res.status(201).json(result);
  }
 
